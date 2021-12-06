@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 
@@ -9,6 +10,7 @@ namespace BlobAccessApp.Common
     public class BlobAccess
     {
 
+        public static HttpClient blobHttpClient = null;
         public static CloudBlockBlob GetBlobReference(string containerNameString,
                                                         string blobNameString)
         {
@@ -23,6 +25,27 @@ namespace BlobAccessApp.Common
             var blobContainerReference = cloudBlobClient.GetContainerReference(containerNameString);
             var blobReference = blobContainerReference.GetBlockBlobReference(blobNameString);
             return blobReference;
+
+        }
+
+        public static string CreateSasToken(string containerNameString,
+                                                    string blobNameString)
+        {
+
+            var blobReference = GetBlobReference(containerNameString, blobNameString);
+            var blobUri = blobReference.Uri;
+
+            var sasPolicy = new SharedAccessBlobPolicy()
+            {
+
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24)
+
+            };
+
+            var blobSas = blobReference.GetSharedAccessSignature(sasPolicy);
+            blobSas = blobUri + blobSas;
+            return blobSas;
 
         }
 

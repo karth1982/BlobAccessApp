@@ -405,5 +405,7 @@ ASALocalRun/
 .localhistory/
 
 !.gitignore
+.vscode
 **/bin
 **/obj
+**/local.settings.json

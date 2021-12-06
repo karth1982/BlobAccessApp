@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -26,12 +27,13 @@ namespace BlobAccessApp.Functions
         {            
 
             var blobName = req.Query["blob"][0];
-            var cloudBlockBlob = BlobAccess.GetBlobReference(containerName, blobName);
+            var blobSasUri = BlobAccess.CreateSasToken(containerName, blobName);
 
-            var ms = new MemoryStream();
-            await cloudBlockBlob.DownloadToStreamAsync(ms);            
-            var bloContentsString = System.Convert.ToBase64String(ms.ToArray());
-            return new OkObjectResult(bloContentsString);
+            if (BlobAccess.blobHttpClient == null)
+                BlobAccess.blobHttpClient = new HttpClient();
+
+            var blobStream = await BlobAccess.blobHttpClient.GetStreamAsync(blobSasUri);
+            return new OkObjectResult(blobStream);
 
         }
     }
