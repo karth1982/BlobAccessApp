@@ -405,4 +405,5 @@ ASALocalRun/
 .localhistory/
 
 !.gitignore
+.vs
 .vscode
