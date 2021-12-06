@@ -406,6 +406,3 @@ ASALocalRun/
 
 !.gitignore
 .vscode
-**/bin
-**/obj
-**/local.settings.json
