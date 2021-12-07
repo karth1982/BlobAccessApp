@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Azure.Storage.Blob;
 using Newtonsoft.Json;
 using BlobAccessApp.Common;
 
@@ -24,9 +25,10 @@ namespace BlobAccessApp.Functions
 
             var blobName = req.Query["blob"][0];
             var blobString = await new StreamReader(req.Body).ReadToEndAsync();
-            var blobBytesArray = Encoding.UTF8.GetBytes(blobString);
-                        
-            var cloudBlockBlob = BlobAccess.GetBlobReference(containerName, blobName);
+            var blobBytesArray = Encoding.UTF8.GetBytes(blobString);            
+
+            var blobSasUri = BlobAccess.CreateUploadSas(containerName, blobName);
+            var cloudBlockBlob = new CloudBlockBlob(new Uri(blobSasUri));
             await cloudBlockBlob.UploadFromByteArrayAsync(blobBytesArray, 0,
                                                           blobBytesArray.Length);
 
