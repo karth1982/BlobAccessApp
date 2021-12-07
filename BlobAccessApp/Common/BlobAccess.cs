@@ -28,8 +28,8 @@ namespace BlobAccessApp.Common
 
         }
 
-        public static string CreateSasToken(string containerNameString,
-                                                    string blobNameString)
+        public static string CreateDownloadSas(string containerNameString,
+                                               string blobNameString)
         {
 
             var blobReference = GetBlobReference(containerNameString, blobNameString);
@@ -39,7 +39,30 @@ namespace BlobAccessApp.Common
             {
 
                 Permissions = SharedAccessBlobPermissions.Read,
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24)
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(2)
+
+            };
+
+            var blobSas = blobReference.GetSharedAccessSignature(sasPolicy);
+            blobSas = blobUri + blobSas;
+            return blobSas;
+
+        }
+
+        public static string CreateUploadSas(string containerNameString,
+                                             string blobNameString)
+        {
+
+            var blobReference = GetBlobReference(containerNameString, blobNameString);
+            var blobUri = blobReference.Uri;
+
+            var sasPolicy = new SharedAccessBlobPolicy()
+            {
+
+                Permissions = SharedAccessBlobPermissions.Write |
+                              SharedAccessBlobPermissions.Add |
+                              SharedAccessBlobPermissions.Create,
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(5)
 
             };
 
