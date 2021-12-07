@@ -27,6 +27,8 @@ namespace BlobAccessApp.Functions
         {            
 
             var blobName = req.Query["blob"][0];
+            log.LogInformation($"Blob Name:{blobName}");
+
             var blobSasUri = BlobAccess.CreateDownloadSas(containerName, blobName);
 
             if (BlobAccess.blobHttpClient == null)
