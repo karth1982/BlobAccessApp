@@ -27,7 +27,7 @@ namespace BlobAccessApp.Functions
         {            
 
             var blobName = req.Query["blob"][0];
-            var blobSasUri = BlobAccess.CreateSasToken(containerName, blobName);
+            var blobSasUri = BlobAccess.CreateDownloadSas(containerName, blobName);
 
             if (BlobAccess.blobHttpClient == null)
                 BlobAccess.blobHttpClient = new HttpClient();
