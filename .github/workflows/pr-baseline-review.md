@@ -50,7 +50,7 @@ jobs:
           BASELINE_REF: ${{ github.sha }}
           OUT_DIR: pr-review
         run: |
-          python scripts/collect.py
+          python -m scripts.collect
 
       - uses: actions/upload-artifact@v4
         with:
