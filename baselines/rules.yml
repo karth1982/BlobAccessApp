@@ -1,0 +1,70 @@
+rules:
+  - id: IAC-SEC-001
+    title: No hardcoded secrets in templates
+    description: Passwords, keys, and connection strings must come from Key Vault or secure parameters, not literals.
+    severity: block
+    type: deterministic
+    applies_to: ["**/*.bicep", "**/*.bicepparam", "**/*.json", "**/*.yml", "**/*.yaml"]
+    check:
+      kind: regex_absent
+      pattern: '(?i)(password|secret|accountkey|sharedaccesskey).*'
+      redact: true
+    remediation: Use a Key Vault reference or a parameter marked @secure().
+
+  - id: IAC-SEC-002
+    title: Public network access must not be enabled
+    description: Resources should not enable public network access unless there is an approved exception.
+    severity: warn
+    type: deterministic
+    applies_to: ["**/*.bicep", "**/*.json"]
+    check:
+      kind: regex_absent
+      pattern: "publicNetworkAccess.*Enabled"
+    remediation: Set to 'Disabled' and use private endpoints.
+
+  - id: IAC-SEC-003
+    title: Minimum TLS version must be 1.2 or higher
+    description: Older TLS versions are not permitted.
+    severity: warn
+    type: deterministic
+    applies_to: ["**/*.bicep", "**/*.json"]
+    check:
+      kind: regex_absent
+      pattern: '(?i)(minimumTlsVersion|minTlsVersion).*TLS1_0'
+    remediation: Set the minimum TLS version to TLS1_2.
+
+  - id: IAC-STD-001
+    title: Prefer AVM modules over raw resources
+    description: Where an Azure Verified Module exists for a resource type, new resources should use it instead of a raw resource declaration.
+    severity: info
+    type: advisory
+    applies_to: ["**/*.bicep"]
+    remediation: Replace the raw resource with the matching AVM module.
+    guidance: Review the resource declaration and confirm the chosen module fits the approved platform template pattern.
+
+  - id: IAC-STD-002
+    title: Mandatory tags are present
+    description: Every new resource or module deployment should set the mandatory platform tags (owner, environment, cost centre; replace with your tagging standard).
+    severity: warn
+    type: advisory
+    applies_to: ["**/*.bicep"]
+    remediation: Add the missing tags or pass the shared tags object.
+    guidance: Confirm the deployment includes the required tag set for ownership and cost tracking.
+
+  - id: IAC-REL-001
+    title: Changes that may recreate a resource
+    description: Flag edits that are likely to force replacement or downtime, such as changes to resource name, location, SKU family, or immutable properties.
+    severity: warn
+    type: advisory
+    applies_to: ["**/*.bicep", "**/*.json"]
+    remediation: Confirm the change window and data impact with the owning team.
+    guidance: Review whether the change is likely to replace or disrupt a live resource and confirm ownership.
+
+  - id: PIPE-001
+    title: Pipeline files use approved templates
+    description: Pipeline YAML in scope should extend or reference the approved platform templates instead of defining its own deployment steps.
+    severity: info
+    type: advisory
+    applies_to: ["**/*.yml", "**/*.yaml"]
+    remediation: Reference the approved template in the platform pipelines repo.
+    guidance: Verify the pipeline is using the approved template or a controlled wrapper pattern.

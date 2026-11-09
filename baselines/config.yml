@@ -1,0 +1,9 @@
+scope:
+  paths:
+    - deploy/
+    - azuredeployment/
+
+limits:
+  max_files: 200
+  max_file_bytes: 500000
+  max_diff_lines_per_file: 400
